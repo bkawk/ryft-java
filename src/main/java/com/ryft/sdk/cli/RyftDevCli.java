@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 public final class RyftDevCli {
+  private static final String DEFAULT_RETURN_URL = "https://example.com/return";
+
   private RyftDevCli() {
   }
 
@@ -137,34 +139,19 @@ public final class RyftDevCli {
   }
 
   private static void handlePaymentSessionCreate(RyftClient client, String[] args) {
-    Map<String, Object> raw = parseMap(requiredArg(args, 1, "options json"));
-    String accountId = stringValue(raw.remove("accountId"));
-    String customerId = stringValue(raw.remove("customerId"));
-    String previousPaymentId = stringValue(raw.remove("previousPaymentId"));
-
-    if (customerId != null) {
-      raw.put("customerDetails", Map.of("id", customerId));
-    }
-    if (previousPaymentId != null) {
-      raw.put("previousPayment", Map.of("id", previousPaymentId));
-    }
-    if (raw.containsKey("splits") && raw.get("splits") != null) {
-      raw.put("splits", Map.of("items", raw.get("splits")));
-    }
-
-    JsonNode response = accountId == null
-        ? client.paymentSessions().create(raw)
-        : client.paymentSessions().createForAccount(raw, accountId);
+    AccountScopedRequest request = buildPaymentSessionCreateRequest(parseMap(requiredArg(args, 1, "options json")));
+    JsonNode response = request.accountId() == null
+        ? client.paymentSessions().create(request.request())
+        : client.paymentSessions().createForAccount(request.request(), request.accountId());
     printJson(response, false);
   }
 
   private static void handlePaymentSessionUpdate(RyftClient client, String[] args) {
     String id = requiredArg(args, 1, "payment session id");
-    Map<String, Object> raw = parseMap(requiredArg(args, 2, "options json"));
-    String accountId = stringValue(raw.remove("accountId"));
-    JsonNode response = accountId == null
-        ? client.paymentSessions().update(id, raw)
-        : client.paymentSessions().updateForAccount(id, raw, accountId);
+    AccountScopedRequest request = buildAccountScopedRequest(parseMap(requiredArg(args, 2, "options json")));
+    JsonNode response = request.accountId() == null
+        ? client.paymentSessions().update(id, request.request())
+        : client.paymentSessions().updateForAccount(id, request.request(), request.accountId());
     printJson(response, false);
   }
 
@@ -328,18 +315,7 @@ public final class RyftDevCli {
     String customerId = requiredArg(args, 1, "customer id");
     String paymentMethodId = requiredArg(args, 2, "payment method id");
     Map<String, Object> options = args.length > 3 && !args[3].isBlank() ? parseMap(args[3]) : new LinkedHashMap<>();
-    Map<String, Object> request = new LinkedHashMap<>(options);
-    request.put("customer", Map.of("id", customerId));
-    if (!paymentMethodId.isBlank()) {
-      request.put("paymentMethod", Map.of("id", paymentMethodId));
-    }
-    if (!request.containsKey("price")) {
-      request.put("price", Map.of(
-          "amount", 500,
-          "currency", "GBP",
-          "interval", Map.of("unit", "Months", "count", 1)
-      ));
-    }
+    Map<String, Object> request = buildSubscriptionCreateRequest(customerId, paymentMethodId, options);
     printJson(client.subscriptions().create(request), false);
   }
 
@@ -413,9 +389,58 @@ public final class RyftDevCli {
     });
   }
 
+  static AccountScopedRequest buildPaymentSessionCreateRequest(Map<String, Object> rawOptions) {
+    AccountScopedRequest scoped = buildAccountScopedRequest(rawOptions);
+    Map<String, Object> request = scoped.request();
+    String customerId = stringValue(request.remove("customerId"));
+    String previousPaymentId = stringValue(request.remove("previousPaymentId"));
+
+    if (customerId != null) {
+      request.put("customerDetails", Map.of("id", customerId));
+    }
+    if (previousPaymentId != null) {
+      request.put("previousPayment", Map.of("id", previousPaymentId));
+    }
+    if (!request.containsKey("returnUrl")) {
+      request.put("returnUrl", DEFAULT_RETURN_URL);
+    }
+
+    Object rawSplits = request.get("splits");
+    if (rawSplits instanceof List<?>) {
+      request.put("splits", Map.of("items", rawSplits));
+    }
+
+    return new AccountScopedRequest(request, scoped.accountId());
+  }
+
+  static Map<String, Object> buildSubscriptionCreateRequest(String customerId, String paymentMethodId, Map<String, Object> options) {
+    Map<String, Object> request = new LinkedHashMap<>(options);
+    request.put("customer", Map.of("id", customerId));
+    if (!paymentMethodId.isBlank()) {
+      request.put("paymentMethod", Map.of("id", paymentMethodId));
+    }
+    request.putIfAbsent("description", "SDK subscription readiness");
+    if (!request.containsKey("price")) {
+      request.put("price", Map.of(
+          "amount", 100,
+          "currency", "GBP",
+          "interval", Map.of("unit", "Months", "count", 1, "times", 12)
+      ));
+    }
+    return request;
+  }
+
+  static AccountScopedRequest buildAccountScopedRequest(Map<String, Object> rawOptions) {
+    Map<String, Object> request = new LinkedHashMap<>(rawOptions);
+    return new AccountScopedRequest(request, stringValue(request.remove("accountId")));
+  }
+
   private static List<Object> parseList(String rawJson) {
     return Json.MAPPER.convertValue(parseJson(rawJson), new TypeReference<>() {
     });
+  }
+
+  record AccountScopedRequest(Map<String, Object> request, String accountId) {
   }
 
   private static JsonNode parseJson(String rawJson) {

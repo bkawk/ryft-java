@@ -5,10 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.ryft.sdk.core.RyftConfig;
 import com.ryft.sdk.core.RyftHttpClient;
 import com.ryft.sdk.model.AccountEntityType;
+import com.ryft.sdk.model.Balance;
 import com.ryft.sdk.model.BillingAddress;
 import com.ryft.sdk.model.CaptureFlow;
 import com.ryft.sdk.model.EntryMode;
+import com.ryft.sdk.model.Event;
 import com.ryft.sdk.model.PaymentType;
+import com.ryft.sdk.model.PlatformFee;
+import com.ryft.sdk.model.RyftFile;
 import com.ryft.sdk.request.CreateAccountAuthorizationRequest;
 import com.ryft.sdk.request.CreateAccountRequest;
 import com.ryft.sdk.request.CreateCustomerRequest;
@@ -219,5 +223,71 @@ class ServiceRoutingTest {
         "https://api.example.test/v1/subscriptions?ascending=false&limit=10&startsAfter=sub_prev&startTimestamp=100&endTimestamp=200",
         fake.getLastRequest().uri().toString()
     );
+  }
+
+  @Test
+  void typedEventReadUsesTypedModel() {
+    FakeHttpClient fake = new FakeHttpClient(request -> FakeHttpClient.jsonResponse(200, "{\"id\":\"evt_123\",\"type\":\"PaymentSession.captured\",\"createdTimestamp\":1710000000}"));
+    EventsService service = new EventsService(new RyftHttpClient(
+        RyftConfig.builder("sk_sandbox_123").baseUrl("https://api.example.test/v1").httpClient(fake).build()
+    ));
+
+    Event event = service.getEvent("evt_123", null);
+
+    assertEquals("evt_123", event.id());
+    assertEquals("PaymentSession.captured", event.type());
+  }
+
+  @Test
+  void typedFileListUsesTypedPageResponse() {
+    FakeHttpClient fake = new FakeHttpClient(request -> FakeHttpClient.jsonResponse(200, "{\"items\":[{\"id\":\"file_123\",\"category\":\"dispute_evidence\",\"fileName\":\"evidence.pdf\"}],\"paginationToken\":\"file_next\"}"));
+    FilesService service = new FilesService(new RyftHttpClient(
+        RyftConfig.builder("sk_sandbox_123").baseUrl("https://api.example.test/v1").httpClient(fake).build()
+    ));
+
+    var files = service.listFiles("dispute_evidence", PageRequest.firstPage(10));
+
+    assertEquals("file_123", files.items().getFirst().id());
+    assertEquals("file_next", files.paginationToken());
+  }
+
+  @Test
+  void typedDisputeListUsesTypedPageResponse() {
+    FakeHttpClient fake = new FakeHttpClient(request -> FakeHttpClient.jsonResponse(200, "{\"items\":[{\"id\":\"dp_123\",\"status\":\"Open\",\"reason\":\"Fraudulent\"}]}"));
+    DisputesService service = new DisputesService(new RyftHttpClient(
+        RyftConfig.builder("sk_sandbox_123").baseUrl("https://api.example.test/v1").httpClient(fake).build()
+    ));
+
+    var disputes = service.listDisputes(TimeRangePageRequest.builder().limit(10).build());
+
+    assertEquals("dp_123", disputes.items().getFirst().id());
+    assertEquals("Open", disputes.items().getFirst().status());
+  }
+
+  @Test
+  void typedBalancesListUsesTypedModels() {
+    FakeHttpClient fake = new FakeHttpClient(request -> FakeHttpClient.jsonResponse(200, "{\"items\":[{\"currency\":\"GBP\",\"available\":1000,\"pending\":50}]}"));
+    BalancesService service = new BalancesService(new RyftHttpClient(
+        RyftConfig.builder("sk_sandbox_123").baseUrl("https://api.example.test/v1").httpClient(fake).build()
+    ));
+
+    var balances = service.listBalances("GBP", "ac_123");
+    Balance balance = balances.items().getFirst();
+
+    assertEquals("GBP", balance.currency());
+    assertEquals(1000, balance.available());
+  }
+
+  @Test
+  void typedPlatformFeeReadUsesTypedModel() {
+    FakeHttpClient fake = new FakeHttpClient(request -> FakeHttpClient.jsonResponse(200, "{\"id\":\"fee_123\",\"amount\":50,\"currency\":\"GBP\"}"));
+    PlatformFeesService service = new PlatformFeesService(new RyftHttpClient(
+        RyftConfig.builder("sk_sandbox_123").baseUrl("https://api.example.test/v1").httpClient(fake).build()
+    ));
+
+    PlatformFee fee = service.getPlatformFee("fee_123");
+
+    assertEquals("fee_123", fee.id());
+    assertEquals(50, fee.amount());
   }
 }

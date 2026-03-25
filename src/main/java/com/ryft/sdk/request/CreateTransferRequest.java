@@ -8,6 +8,9 @@ public record CreateTransferRequest(
     String currency,
     Map<String, Object> metadata
 ) {
+  /**
+   * Starts a typed transfer-create builder.
+   */
   public static Builder builder(String destinationAccountId, Integer amount, String currency) {
     return new Builder(destinationAccountId, amount, currency);
   }
@@ -24,11 +27,17 @@ public record CreateTransferRequest(
       this.currency = currency;
     }
 
+    /**
+     * Sets application-defined metadata for the transfer.
+     */
     public Builder metadata(Map<String, Object> metadata) {
       this.metadata = metadata;
       return this;
     }
 
+    /**
+     * Builds the immutable request payload.
+     */
     public CreateTransferRequest build() {
       return new CreateTransferRequest(destinationAccountId, amount, currency, metadata);
     }

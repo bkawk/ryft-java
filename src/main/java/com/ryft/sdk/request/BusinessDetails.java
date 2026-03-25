@@ -10,6 +10,9 @@ public record BusinessDetails(
     Address registeredAddress,
     String contactEmail
 ) {
+  /**
+   * Starts a typed business-details builder.
+   */
   public static Builder builder(String name, String type, String registrationNumber) {
     return new Builder(name, type, registrationNumber);
   }
@@ -27,16 +30,25 @@ public record BusinessDetails(
       this.registrationNumber = registrationNumber;
     }
 
+    /**
+     * Sets the business registered address.
+     */
     public Builder registeredAddress(Address registeredAddress) {
       this.registeredAddress = registeredAddress;
       return this;
     }
 
+    /**
+     * Sets the primary business contact email.
+     */
     public Builder contactEmail(String contactEmail) {
       this.contactEmail = contactEmail;
       return this;
     }
 
+    /**
+     * Builds the immutable business-details payload.
+     */
     public BusinessDetails build() {
       return new BusinessDetails(name, type, registrationNumber, registeredAddress, contactEmail);
     }

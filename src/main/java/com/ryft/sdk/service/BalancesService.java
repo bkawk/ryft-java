@@ -3,7 +3,11 @@ package com.ryft.sdk.service;
 import com.ryft.sdk.core.QueryParams;
 import com.ryft.sdk.core.RyftHttpClient;
 import com.ryft.sdk.model.ApiList;
+import com.ryft.sdk.model.Balance;
 
+/**
+ * Balance read operations for connected accounts.
+ */
 public final class BalancesService extends BaseService {
   public BalancesService(RyftHttpClient client) {
     super(client);
@@ -12,5 +16,13 @@ public final class BalancesService extends BaseService {
   public ApiList list(String currency, String accountId) {
     QueryParams query = new QueryParams().put("currency", currency);
     return list("balances", query, accountId);
+  }
+
+  /**
+   * Lists balances as typed models.
+   */
+  public ApiList<Balance> listBalances(String currency, String accountId) {
+    QueryParams query = new QueryParams().put("currency", currency);
+    return list("balances", query, accountId, Balance.class);
   }
 }

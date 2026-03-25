@@ -31,31 +31,49 @@ public record TimeRangePageRequest(
     private Integer limit;
     private String startsAfter;
 
+    /**
+     * Sets the inclusive lower timestamp bound.
+     */
     public Builder startTimestamp(Integer startTimestamp) {
       this.startTimestamp = startTimestamp;
       return this;
     }
 
+    /**
+     * Sets the inclusive upper timestamp bound.
+     */
     public Builder endTimestamp(Integer endTimestamp) {
       this.endTimestamp = endTimestamp;
       return this;
     }
 
+    /**
+     * Sets the sort direction for the list endpoint.
+     */
     public Builder ascending(Boolean ascending) {
       this.ascending = ascending;
       return this;
     }
 
+    /**
+     * Sets the maximum number of items to return.
+     */
     public Builder limit(Integer limit) {
       this.limit = limit;
       return this;
     }
 
+    /**
+     * Sets the pagination token returned by a previous page.
+     */
     public Builder startsAfter(String startsAfter) {
       this.startsAfter = startsAfter;
       return this;
     }
 
+    /**
+     * Builds the immutable time-ranged page request.
+     */
     public TimeRangePageRequest build() {
       return new TimeRangePageRequest(startTimestamp, endTimestamp, ascending, limit, startsAfter);
     }

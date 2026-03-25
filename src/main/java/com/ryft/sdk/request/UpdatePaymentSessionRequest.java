@@ -8,6 +8,9 @@ public record UpdatePaymentSessionRequest(
     String captureFlow,
     Map<String, Object> metadata
 ) {
+  /**
+   * Starts a typed payment-session update builder.
+   */
   public static Builder builder() {
     return new Builder();
   }
@@ -18,26 +21,41 @@ public record UpdatePaymentSessionRequest(
     private String captureFlow;
     private Map<String, Object> metadata;
 
+    /**
+     * Sets the session amount.
+     */
     public Builder amount(Integer amount) {
       this.amount = amount;
       return this;
     }
 
+    /**
+     * Sets the customer email used for the session.
+     */
     public Builder customerEmail(String customerEmail) {
       this.customerEmail = customerEmail;
       return this;
     }
 
+    /**
+     * Sets the capture flow using the API's string values.
+     */
     public Builder captureFlow(String captureFlow) {
       this.captureFlow = captureFlow;
       return this;
     }
 
+    /**
+     * Sets application-defined metadata for the session.
+     */
     public Builder metadata(Map<String, Object> metadata) {
       this.metadata = metadata;
       return this;
     }
 
+    /**
+     * Builds the immutable request payload.
+     */
     public UpdatePaymentSessionRequest build() {
       return new UpdatePaymentSessionRequest(amount, customerEmail, captureFlow, metadata);
     }

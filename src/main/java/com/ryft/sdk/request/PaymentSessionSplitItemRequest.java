@@ -12,6 +12,9 @@ public record PaymentSessionSplitItemRequest(
     Map<String, Object> fee,
     Map<String, Object> metadata
 ) {
+  /**
+   * Starts a typed split-allocation builder.
+   */
   public static Builder builder(String accountId, Integer amount) {
     return new Builder(accountId, amount);
   }
@@ -28,21 +31,33 @@ public record PaymentSessionSplitItemRequest(
       this.amount = amount;
     }
 
+    /**
+     * Sets the destination split description.
+     */
     public Builder description(String description) {
       this.description = description;
       return this;
     }
 
+    /**
+     * Sets fee information for the split allocation.
+     */
     public Builder fee(Map<String, Object> fee) {
       this.fee = fee;
       return this;
     }
 
+    /**
+     * Sets application-defined metadata for the split allocation.
+     */
     public Builder metadata(Map<String, Object> metadata) {
       this.metadata = metadata;
       return this;
     }
 
+    /**
+     * Builds the immutable split-allocation payload.
+     */
     public PaymentSessionSplitItemRequest build() {
       return new PaymentSessionSplitItemRequest(accountId, amount, description, fee, metadata);
     }

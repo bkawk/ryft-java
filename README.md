@@ -27,6 +27,7 @@ Then depend on it from another Maven project with:
 ```java
 import com.ryft.sdk.RyftClient;
 import com.ryft.sdk.model.ApiError;
+import com.ryft.sdk.request.CreateCustomerRequest;
 import java.util.Map;
 
 public final class Example {
@@ -34,14 +35,15 @@ public final class Example {
     RyftClient client = new RyftClient("sk_sandbox_your_secret_key");
 
     try {
-      var customer = client.customers().create(Map.of(
-          "email", "sdk-example@example.test",
-          "firstName", "Java",
-          "lastName", "Example",
-          "metadata", Map.of("source", "readme")
-      ));
+      var customer = client.customers().create(
+          CreateCustomerRequest.builder("sdk-example@example.test")
+              .firstName("Java")
+              .lastName("Example")
+              .metadata(Map.of("source", "readme"))
+              .build()
+      );
 
-      System.out.println(customer.toPrettyString());
+      System.out.println(customer.id());
     } catch (ApiError error) {
       System.err.printf(
           "Ryft error: status=%d code=%s requestId=%s%n",
@@ -59,6 +61,36 @@ The repository also includes small example programs:
 ```bash
 examples/basic/src/main/java/com/ryft/examples/basic/BasicExample.java
 examples/http-jdk/src/main/java/com/ryft/examples/httpjdk/HttpServerExample.java
+```
+
+## Idiomatic Usage
+
+The SDK keeps the raw `JsonNode` access patterns used by the parity harness, but it also exposes typed request builders and typed response models for the most common flows:
+
+```java
+import com.ryft.sdk.request.CreatePaymentSessionRequest;
+import com.ryft.sdk.request.UpdateSubscriptionRequest;
+
+var session = client.paymentSessions().create(
+    CreatePaymentSessionRequest.builder(500, "GBP")
+        .customerEmail("buyer@example.test")
+        .paymentType("Standard")
+        .entryMode("Online")
+        .captureFlow("Automatic")
+        .metadata(Map.of("source", "typed-example"))
+        .build()
+);
+
+var subscription = client.subscriptions().update(
+    "sub_123",
+    UpdateSubscriptionRequest.builder()
+        .description("Gold plan")
+        .metadata(Map.of("tier", "gold"))
+        .build()
+);
+
+System.out.println(session.id());
+System.out.println(subscription.description());
 ```
 
 ## Configuration

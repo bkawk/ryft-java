@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.ryft.sdk.core.QueryParams;
 import com.ryft.sdk.core.RyftHttpClient;
 import com.ryft.sdk.model.ApiList;
+import com.ryft.sdk.model.PaymentSession;
+import com.ryft.sdk.request.CreatePaymentSessionRequest;
+import com.ryft.sdk.request.UpdatePaymentSessionRequest;
 
 public final class PaymentSessionsService extends BaseService {
   public PaymentSessionsService(RyftHttpClient client) {
@@ -14,24 +17,48 @@ public final class PaymentSessionsService extends BaseService {
     return create("payment-sessions", request);
   }
 
+  public PaymentSession create(CreatePaymentSessionRequest request) {
+    return create("payment-sessions", request, PaymentSession.class);
+  }
+
   public JsonNode createForAccount(Object request, String accountId) {
     return create("payment-sessions", request, accountId);
+  }
+
+  public PaymentSession createForAccount(CreatePaymentSessionRequest request, String accountId) {
+    return create("payment-sessions", request, accountId, PaymentSession.class);
   }
 
   public JsonNode get(String paymentSessionId) {
     return getEntity("payment-sessions/" + paymentSessionId);
   }
 
+  public PaymentSession getPaymentSession(String paymentSessionId) {
+    return getEntity("payment-sessions/" + paymentSessionId, PaymentSession.class);
+  }
+
   public JsonNode getForAccount(String paymentSessionId, String accountId) {
     return getEntity("payment-sessions/" + paymentSessionId, accountId);
+  }
+
+  public PaymentSession getPaymentSessionForAccount(String paymentSessionId, String accountId) {
+    return getEntity("payment-sessions/" + paymentSessionId, accountId, PaymentSession.class);
   }
 
   public JsonNode update(String paymentSessionId, Object request) {
     return patch("payment-sessions/" + paymentSessionId, request);
   }
 
+  public PaymentSession update(String paymentSessionId, UpdatePaymentSessionRequest request) {
+    return patch("payment-sessions/" + paymentSessionId, request, PaymentSession.class);
+  }
+
   public JsonNode updateForAccount(String paymentSessionId, Object request, String accountId) {
     return patch("payment-sessions/" + paymentSessionId, request, accountId);
+  }
+
+  public PaymentSession updateForAccount(String paymentSessionId, UpdatePaymentSessionRequest request, String accountId) {
+    return patch("payment-sessions/" + paymentSessionId, request, accountId, PaymentSession.class);
   }
 
   public JsonNode refund(String paymentSessionId, Object request) {

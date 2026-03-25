@@ -1,6 +1,7 @@
 package com.ryft.examples.basic;
 
 import com.ryft.sdk.RyftClient;
+import com.ryft.sdk.request.CreateCustomerRequest;
 import java.util.Map;
 
 public final class BasicExample {
@@ -14,12 +15,13 @@ public final class BasicExample {
     }
 
     RyftClient client = new RyftClient(secretKey);
-    var customer = client.customers().create(Map.of(
-        "email", "sdk-example@example.test",
-        "firstName", "Java",
-        "lastName", "Example",
-        "metadata", Map.of("source", "basic-example")
-    ));
+    var customer = client.customers().create(
+        CreateCustomerRequest.builder("sdk-example@example.test")
+            .firstName("Java")
+            .lastName("Example")
+            .metadata(Map.of("source", "basic-example"))
+            .build()
+    );
 
     System.out.println(customer.toPrettyString());
   }

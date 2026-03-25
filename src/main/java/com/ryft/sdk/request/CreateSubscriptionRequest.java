@@ -16,8 +16,8 @@ public record CreateSubscriptionRequest(
     Integer billingCycleTimestamp,
     SubscriptionPrice price,
     Map<String, Object> metadata,
-    Map<String, Object> paymentSettings,
-    Map<String, Object> shippingDetails
+    SubscriptionPaymentSettings paymentSettings,
+    ShippingDetails shippingDetails
 ) {
   public static Builder builder(String customerId, String paymentMethodId) {
     return new Builder(customerId, paymentMethodId);
@@ -30,8 +30,8 @@ public record CreateSubscriptionRequest(
     private Integer billingCycleTimestamp;
     private SubscriptionPrice price = new SubscriptionPrice(100, "GBP", new SubscriptionInterval(SubscriptionIntervalUnit.Months, 1, 12));
     private Map<String, Object> metadata;
-    private Map<String, Object> paymentSettings;
-    private Map<String, Object> shippingDetails;
+    private SubscriptionPaymentSettings paymentSettings;
+    private ShippingDetails shippingDetails;
 
     private Builder(String customerId, String paymentMethodId) {
       this.customerId = customerId;
@@ -61,12 +61,18 @@ public record CreateSubscriptionRequest(
       return this;
     }
 
-    public Builder paymentSettings(Map<String, Object> paymentSettings) {
+    /**
+     * Sets subscription payment settings.
+     */
+    public Builder paymentSettings(SubscriptionPaymentSettings paymentSettings) {
       this.paymentSettings = paymentSettings;
       return this;
     }
 
-    public Builder shippingDetails(Map<String, Object> shippingDetails) {
+    /**
+     * Sets subscription shipping details.
+     */
+    public Builder shippingDetails(ShippingDetails shippingDetails) {
       this.shippingDetails = shippingDetails;
       return this;
     }

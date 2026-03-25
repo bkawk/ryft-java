@@ -9,7 +9,7 @@ public record PaymentSessionSplitItemRequest(
     String accountId,
     Integer amount,
     String description,
-    Map<String, Object> fee,
+    FeeRequest fee,
     Map<String, Object> metadata
 ) {
   /**
@@ -23,7 +23,7 @@ public record PaymentSessionSplitItemRequest(
     private final String accountId;
     private final Integer amount;
     private String description;
-    private Map<String, Object> fee;
+    private FeeRequest fee;
     private Map<String, Object> metadata;
 
     private Builder(String accountId, Integer amount) {
@@ -42,7 +42,7 @@ public record PaymentSessionSplitItemRequest(
     /**
      * Sets fee information for the split allocation.
      */
-    public Builder fee(Map<String, Object> fee) {
+    public Builder fee(FeeRequest fee) {
       this.fee = fee;
       return this;
     }

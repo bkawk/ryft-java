@@ -12,7 +12,11 @@ import com.ryft.sdk.model.EntryMode;
 import com.ryft.sdk.model.Event;
 import com.ryft.sdk.model.PaymentType;
 import com.ryft.sdk.model.PlatformFee;
+import com.ryft.sdk.model.SubscriptionInterval;
+import com.ryft.sdk.model.SubscriptionIntervalUnit;
+import com.ryft.sdk.model.SubscriptionPrice;
 import com.ryft.sdk.model.RyftFile;
+import com.ryft.sdk.request.Address;
 import com.ryft.sdk.request.CreateAccountAuthorizationRequest;
 import com.ryft.sdk.request.CreateAccountRequest;
 import com.ryft.sdk.request.CreateCustomerRequest;
@@ -22,6 +26,9 @@ import com.ryft.sdk.request.PageRequest;
 import com.ryft.sdk.request.TimeRangePageRequest;
 import com.ryft.sdk.request.UpdateSubscriptionRequest;
 import com.ryft.sdk.request.UpdatePaymentMethodRequest;
+import com.ryft.sdk.request.ShippingDetails;
+import com.ryft.sdk.request.StatementDescriptor;
+import com.ryft.sdk.request.SubscriptionPaymentSettings;
 import com.ryft.sdk.testsupport.FakeHttpClient;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -113,6 +120,29 @@ class ServiceRoutingTest {
 
     assertEquals("sub_123", subscription.id());
     assertEquals("Gold plan", subscription.description());
+  }
+
+  @Test
+  void typedSubscriptionCreateSerializesStructuredNestedPayloads() {
+    FakeHttpClient fake = new FakeHttpClient(request -> FakeHttpClient.jsonResponse(200, "{\"id\":\"sub_123\",\"description\":\"Gold plan\"}"));
+    SubscriptionsService service = new SubscriptionsService(new RyftHttpClient(
+        RyftConfig.builder("sk_sandbox_123").baseUrl("https://api.example.test/v1").httpClient(fake).build()
+    ));
+
+    service.create(
+        com.ryft.sdk.request.CreateSubscriptionRequest.builder("cus_123", "pm_123")
+            .description("Gold plan")
+            .price(new SubscriptionPrice(999, "GBP", new SubscriptionInterval(SubscriptionIntervalUnit.Months, 1, 12)))
+            .paymentSettings(SubscriptionPaymentSettings.of(StatementDescriptor.of("Ryft Ltd", "London")))
+            .shippingDetails(ShippingDetails.of(Address.builder("1 SDK Street", "London", "GB", "SW1A1AA").build()))
+            .metadata(Map.of("tier", "gold"))
+            .build()
+    );
+
+    String body = fake.getLastBody();
+    assertEquals("https://api.example.test/v1/subscriptions", fake.getLastRequest().uri().toString());
+    org.junit.jupiter.api.Assertions.assertTrue(body.contains("\"paymentSettings\":{\"statementDescriptor\":{\"descriptor\":\"Ryft Ltd\",\"city\":\"London\"}}"));
+    org.junit.jupiter.api.Assertions.assertTrue(body.contains("\"shippingDetails\":{\"address\":{\"lineOne\":\"1 SDK Street\""));
   }
 
   @Test

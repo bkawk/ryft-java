@@ -21,8 +21,8 @@ public record CreatePaymentSessionRequest(
     Integer platformFee,
     PaymentSessionSplitRequest splits,
     IdReference previousPayment,
-    Map<String, Object> rebillingDetail,
-    Map<String, Object> attemptPayment,
+    RebillingDetailRequest rebillingDetail,
+    AttemptPaymentRequest attemptPayment,
     Map<String, Object> metadata
 ) {
   /**
@@ -44,8 +44,8 @@ public record CreatePaymentSessionRequest(
     private Integer platformFee;
     private PaymentSessionSplitRequest splits;
     private IdReference previousPayment;
-    private Map<String, Object> rebillingDetail;
-    private Map<String, Object> attemptPayment;
+    private RebillingDetailRequest rebillingDetail;
+    private AttemptPaymentRequest attemptPayment;
     private Map<String, Object> metadata;
 
     private Builder(Integer amount, String currency) {
@@ -110,12 +110,18 @@ public record CreatePaymentSessionRequest(
       return this;
     }
 
-    public Builder rebillingDetail(Map<String, Object> rebillingDetail) {
+    /**
+     * Sets rebilling details for recurring payment attempts.
+     */
+    public Builder rebillingDetail(RebillingDetailRequest rebillingDetail) {
       this.rebillingDetail = rebillingDetail;
       return this;
     }
 
-    public Builder attemptPayment(Map<String, Object> attemptPayment) {
+    /**
+     * Sets a server-side attempt-payment payload.
+     */
+    public Builder attemptPayment(AttemptPaymentRequest attemptPayment) {
       this.attemptPayment = attemptPayment;
       return this;
     }

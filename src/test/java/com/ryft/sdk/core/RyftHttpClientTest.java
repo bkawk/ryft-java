@@ -11,9 +11,13 @@ import com.ryft.sdk.model.CaptureFlow;
 import com.ryft.sdk.model.Customer;
 import com.ryft.sdk.model.EntryMode;
 import com.ryft.sdk.model.PaymentType;
+import com.ryft.sdk.request.AttemptPaymentRequest;
 import com.ryft.sdk.request.CreatePaymentSessionRequest;
+import com.ryft.sdk.request.FeeRequest;
+import com.ryft.sdk.request.PaymentMethodReference;
 import com.ryft.sdk.request.PaymentSessionSplitItemRequest;
 import com.ryft.sdk.request.PaymentSessionSplitRequest;
+import com.ryft.sdk.request.RebillingDetailRequest;
 import com.ryft.sdk.testsupport.FakeHttpClient;
 import java.util.List;
 import java.util.Map;
@@ -108,10 +112,19 @@ class RyftHttpClientTest {
             .paymentType(PaymentType.Standard)
             .entryMode(EntryMode.Online)
             .captureFlow(CaptureFlow.Automatic)
+            .rebillingDetail(
+                RebillingDetailRequest.builder()
+                    .amountVariance("Fixed")
+                    .numberOfDaysBetweenPayments(30)
+                    .totalNumberOfPayments(12)
+                    .currentPaymentNumber(2)
+                    .build()
+            )
+            .attemptPayment(AttemptPaymentRequest.of(PaymentMethodReference.of("pm_123")))
             .splits(PaymentSessionSplitRequest.of(List.of(
                 PaymentSessionSplitItemRequest.builder("ac_123", 500)
                     .description("platform split")
-                    .fee(Map.of("amount", 25))
+                    .fee(FeeRequest.of(25))
                     .build()
             )))
             .build()
@@ -120,6 +133,8 @@ class RyftHttpClientTest {
     assertTrue(json.contains("\"paymentType\":\"Standard\""));
     assertTrue(json.contains("\"entryMode\":\"Online\""));
     assertTrue(json.contains("\"captureFlow\":\"Automatic\""));
+    assertTrue(json.contains("\"rebillingDetail\":{\"amountVariance\":\"Fixed\""));
+    assertTrue(json.contains("\"attemptPayment\":{\"paymentMethod\":{\"id\":\"pm_123\"}}"));
     assertTrue(json.contains("\"splits\":{\"items\":["));
   }
 }

@@ -8,6 +8,9 @@ import com.ryft.sdk.request.CreateAccountAuthorizationRequest;
 import com.ryft.sdk.request.CreateAccountRequest;
 import com.ryft.sdk.request.UpdateAccountRequest;
 
+/**
+ * Connected account operations for the Ryft API.
+ */
 public final class AccountsService extends BaseService {
   public AccountsService(RyftHttpClient client) {
     super(client);

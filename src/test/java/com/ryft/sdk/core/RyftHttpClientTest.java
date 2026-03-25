@@ -1,9 +1,13 @@
 package com.ryft.sdk.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.ryft.sdk.model.ApiError;
+import com.ryft.sdk.model.ApiList;
+import com.ryft.sdk.model.Customer;
 import com.ryft.sdk.testsupport.FakeHttpClient;
 import org.junit.jupiter.api.Test;
 
@@ -64,5 +68,27 @@ class RyftHttpClientTest {
     assertEquals("req_123", error.getRequestId());
     assertEquals("invalid_field", error.getErrors().getFirst().code());
     assertEquals("email is required", error.getErrors().getFirst().message());
+  }
+
+  @Test
+  void typedApiListExposesPaginationHelpers() {
+    ApiList<Customer> list = com.ryft.sdk.core.Json.MAPPER.convertValue(
+        com.ryft.sdk.core.Json.MAPPER.valueToTree(java.util.Map.of(
+            "items", java.util.List.of(java.util.Map.of("id", "cus_123", "email", "ada@example.com")),
+            "paginationToken", "cus_next"
+        )),
+        com.ryft.sdk.core.Json.MAPPER.getTypeFactory().constructParametricType(ApiList.class, Customer.class)
+    );
+
+    assertEquals(1, list.items().size());
+    assertTrue(list.hasNextPage());
+    assertEquals("cus_next", list.nextPageRequest(50).startsAfter());
+    assertEquals(50, list.nextPageRequest(50).limit());
+  }
+
+  @Test
+  void typedApiListHandlesMissingPaginationToken() {
+    ApiList<Customer> list = new ApiList<>(java.util.List.of(), null);
+    assertFalse(list.hasNextPage());
   }
 }

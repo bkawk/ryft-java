@@ -7,8 +7,12 @@ import com.ryft.sdk.model.ApiList;
 import com.ryft.sdk.model.DeletedResource;
 import com.ryft.sdk.model.Person;
 import com.ryft.sdk.request.CreatePersonRequest;
+import com.ryft.sdk.request.PageRequest;
 import com.ryft.sdk.request.UpdatePersonRequest;
 
+/**
+ * Person operations for connected Ryft accounts.
+ */
 public final class PersonsService extends BaseService {
   public PersonsService(RyftHttpClient client) {
     super(client);
@@ -37,6 +41,18 @@ public final class PersonsService extends BaseService {
 
   public ApiList<Person> listPeople(String accountId, boolean ascending, Integer limit, String startsAfter) {
     QueryParams query = QueryParams.list(ascending, limit, startsAfter);
+    return list("accounts/" + accountId + "/persons", query, Person.class);
+  }
+
+  /**
+   * Lists people on an account using typed pagination options.
+   */
+  public ApiList<Person> listPeople(String accountId, PageRequest pageRequest) {
+    QueryParams query = QueryParams.list(
+        pageRequest != null ? Boolean.TRUE.equals(pageRequest.ascending()) : false,
+        pageRequest != null ? pageRequest.limit() : null,
+        pageRequest != null ? pageRequest.startsAfter() : null
+    );
     return list("accounts/" + accountId + "/persons", query, Person.class);
   }
 

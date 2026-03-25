@@ -8,6 +8,9 @@ import com.ryft.sdk.model.Webhook;
 import com.ryft.sdk.request.CreateWebhookRequest;
 import com.ryft.sdk.request.UpdateWebhookRequest;
 
+/**
+ * Webhook endpoint management operations.
+ */
 public final class WebhooksService extends BaseService {
   public WebhooksService(RyftHttpClient client) {
     super(client);

@@ -7,8 +7,12 @@ import com.ryft.sdk.model.ApiList;
 import com.ryft.sdk.model.DeletedResource;
 import com.ryft.sdk.model.Subscription;
 import com.ryft.sdk.request.CreateSubscriptionRequest;
+import com.ryft.sdk.request.TimeRangePageRequest;
 import com.ryft.sdk.request.UpdateSubscriptionRequest;
 
+/**
+ * Subscription operations for recurring billing.
+ */
 public final class SubscriptionsService extends BaseService {
   public SubscriptionsService(RyftHttpClient client) {
     super(client);
@@ -49,6 +53,20 @@ public final class SubscriptionsService extends BaseService {
     QueryParams query = QueryParams.list(ascending, limit, startsAfter)
         .put("startTimestamp", startTimestamp)
         .put("endTimestamp", endTimestamp);
+    return list("subscriptions", query, Subscription.class);
+  }
+
+  /**
+   * Lists subscriptions using a typed time-ranged page request.
+   */
+  public ApiList<Subscription> listSubscriptions(TimeRangePageRequest pageRequest) {
+    QueryParams query = QueryParams.list(
+            pageRequest != null ? Boolean.TRUE.equals(pageRequest.ascending()) : false,
+            pageRequest != null ? pageRequest.limit() : null,
+            pageRequest != null ? pageRequest.startsAfter() : null
+        )
+        .put("startTimestamp", pageRequest != null ? pageRequest.startTimestamp() : null)
+        .put("endTimestamp", pageRequest != null ? pageRequest.endTimestamp() : null);
     return list("subscriptions", query, Subscription.class);
   }
 

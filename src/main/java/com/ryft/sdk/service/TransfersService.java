@@ -6,7 +6,11 @@ import com.ryft.sdk.core.RyftHttpClient;
 import com.ryft.sdk.model.ApiList;
 import com.ryft.sdk.model.Transfer;
 import com.ryft.sdk.request.CreateTransferRequest;
+import com.ryft.sdk.request.PageRequest;
 
+/**
+ * Transfer operations for moving funds between Ryft accounts.
+ */
 public final class TransfersService extends BaseService {
   public TransfersService(RyftHttpClient client) {
     super(client);
@@ -34,5 +38,17 @@ public final class TransfersService extends BaseService {
 
   public ApiList<Transfer> listTransfers(Integer limit) {
     return list("transfers", new QueryParams().put("limit", limit), Transfer.class);
+  }
+
+  /**
+   * Lists transfers using typed pagination options.
+   */
+  public ApiList<Transfer> listTransfers(PageRequest pageRequest) {
+    QueryParams query = QueryParams.list(
+        pageRequest != null ? Boolean.TRUE.equals(pageRequest.ascending()) : false,
+        pageRequest != null ? pageRequest.limit() : null,
+        pageRequest != null ? pageRequest.startsAfter() : null
+    );
+    return list("transfers", query, Transfer.class);
   }
 }

@@ -6,7 +6,11 @@ import com.ryft.sdk.core.RyftHttpClient;
 import com.ryft.sdk.model.ApiList;
 import com.ryft.sdk.model.Payout;
 import com.ryft.sdk.request.CreatePayoutRequest;
+import com.ryft.sdk.request.TimeRangePageRequest;
 
+/**
+ * Payout operations for connected Ryft accounts.
+ */
 public final class PayoutsService extends BaseService {
   public PayoutsService(RyftHttpClient client) {
     super(client);
@@ -39,6 +43,20 @@ public final class PayoutsService extends BaseService {
     QueryParams query = QueryParams.list(ascending, limit, startsAfter)
         .put("startTimestamp", startTimestamp)
         .put("endTimestamp", endTimestamp);
+    return list("accounts/" + accountId + "/payouts", query, Payout.class);
+  }
+
+  /**
+   * Lists payouts using a typed time-ranged page request.
+   */
+  public ApiList<Payout> listPayouts(String accountId, TimeRangePageRequest pageRequest) {
+    QueryParams query = QueryParams.list(
+            pageRequest != null ? Boolean.TRUE.equals(pageRequest.ascending()) : false,
+            pageRequest != null ? pageRequest.limit() : null,
+            pageRequest != null ? pageRequest.startsAfter() : null
+        )
+        .put("startTimestamp", pageRequest != null ? pageRequest.startTimestamp() : null)
+        .put("endTimestamp", pageRequest != null ? pageRequest.endTimestamp() : null);
     return list("accounts/" + accountId + "/payouts", query, Payout.class);
   }
 }

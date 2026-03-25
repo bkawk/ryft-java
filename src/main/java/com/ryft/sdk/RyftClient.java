@@ -40,10 +40,16 @@ public final class RyftClient {
   private final FilesService files;
   private final DisputesService disputes;
 
+  /**
+   * Creates a client using the provided Ryft secret key.
+   */
   public RyftClient(String secretKey) {
     this(RyftConfig.builder(secretKey).build());
   }
 
+  /**
+   * Creates a client using an explicit configuration object.
+   */
   public RyftClient(RyftConfig config) {
     this.httpClient = new RyftHttpClient(config);
     this.customers = new CustomersService(httpClient);

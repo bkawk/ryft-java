@@ -69,6 +69,8 @@ The SDK keeps the raw `JsonNode` access patterns used by the parity harness, but
 
 ```java
 import com.ryft.sdk.request.CreatePaymentSessionRequest;
+import com.ryft.sdk.request.PageRequest;
+import com.ryft.sdk.request.TimeRangePageRequest;
 import com.ryft.sdk.request.UpdateSubscriptionRequest;
 
 var session = client.paymentSessions().create(
@@ -91,6 +93,34 @@ var subscription = client.subscriptions().update(
 
 System.out.println(session.id());
 System.out.println(subscription.description());
+```
+
+Typed list endpoints also support pagination request objects and pagination helpers:
+
+```java
+var customers = client.customers().listCustomers(
+    "ada@example.com",
+    null,
+    null,
+    PageRequest.builder().limit(25).build()
+);
+
+if (customers.hasNextPage()) {
+  var nextPage = client.customers().listCustomers(
+      "ada@example.com",
+      null,
+      null,
+      customers.nextPageRequest(25)
+  );
+}
+
+var subscriptions = client.subscriptions().listSubscriptions(
+    TimeRangePageRequest.builder()
+        .startTimestamp(1_710_000_000)
+        .endTimestamp(1_720_000_000)
+        .limit(10)
+        .build()
+);
 ```
 
 ## Configuration

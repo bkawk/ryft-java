@@ -10,6 +10,8 @@ import com.ryft.sdk.request.CreateAccountRequest;
 import com.ryft.sdk.request.CreateCustomerRequest;
 import com.ryft.sdk.request.CreatePaymentSessionRequest;
 import com.ryft.sdk.request.CreateWebhookRequest;
+import com.ryft.sdk.request.PageRequest;
+import com.ryft.sdk.request.TimeRangePageRequest;
 import com.ryft.sdk.request.UpdateSubscriptionRequest;
 import com.ryft.sdk.request.UpdatePaymentMethodRequest;
 import com.ryft.sdk.testsupport.FakeHttpClient;
@@ -166,5 +168,49 @@ class ServiceRoutingTest {
 
     assertEquals("pm_123", paymentMethod.id());
     assertEquals("London", paymentMethod.billingAddress().city());
+  }
+
+  @Test
+  void typedCustomerListAcceptsPageRequest() {
+    FakeHttpClient fake = new FakeHttpClient(request -> FakeHttpClient.jsonResponse(200, "{\"items\":[],\"paginationToken\":\"cus_next\"}"));
+    CustomersService service = new CustomersService(new RyftHttpClient(
+        RyftConfig.builder("sk_sandbox_123").baseUrl("https://api.example.test/v1").httpClient(fake).build()
+    ));
+
+    var list = service.listCustomers(
+        "ada@example.com",
+        100,
+        200,
+        PageRequest.builder().ascending(true).limit(25).startsAfter("cus_prev").build()
+    );
+
+    assertEquals(
+        "https://api.example.test/v1/customers?ascending=true&limit=25&startsAfter=cus_prev&email=ada%40example.com&startTimestamp=100&endTimestamp=200",
+        fake.getLastRequest().uri().toString()
+    );
+    assertEquals("cus_next", list.paginationToken());
+  }
+
+  @Test
+  void typedSubscriptionListAcceptsTimeRangePageRequest() {
+    FakeHttpClient fake = new FakeHttpClient(request -> FakeHttpClient.jsonResponse(200, "{\"items\":[]}"));
+    SubscriptionsService service = new SubscriptionsService(new RyftHttpClient(
+        RyftConfig.builder("sk_sandbox_123").baseUrl("https://api.example.test/v1").httpClient(fake).build()
+    ));
+
+    service.listSubscriptions(
+        TimeRangePageRequest.builder()
+            .startTimestamp(100)
+            .endTimestamp(200)
+            .ascending(false)
+            .limit(10)
+            .startsAfter("sub_prev")
+            .build()
+    );
+
+    assertEquals(
+        "https://api.example.test/v1/subscriptions?ascending=false&limit=10&startsAfter=sub_prev&startTimestamp=100&endTimestamp=200",
+        fake.getLastRequest().uri().toString()
+    );
   }
 }

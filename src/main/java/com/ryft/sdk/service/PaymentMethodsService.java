@@ -6,6 +6,9 @@ import com.ryft.sdk.model.DeletedResource;
 import com.ryft.sdk.model.PaymentMethod;
 import com.ryft.sdk.request.UpdatePaymentMethodRequest;
 
+/**
+ * Saved payment method operations.
+ */
 public final class PaymentMethodsService extends BaseService {
   public PaymentMethodsService(RyftHttpClient client) {
     super(client);

@@ -129,7 +129,7 @@ class ServiceRoutingTest {
     );
 
     assertEquals("ac_123", account.id());
-    assertEquals("Business", account.entityType());
+    assertEquals(AccountEntityType.Business, account.entityType());
     assertEquals("biz@example.com", account.email());
   }
 

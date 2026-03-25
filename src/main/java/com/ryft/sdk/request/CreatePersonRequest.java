@@ -10,7 +10,7 @@ public record CreatePersonRequest(
     String dateOfBirth,
     String gender,
     List<String> nationalities,
-    Map<String, Object> address,
+    Address address,
     String phoneNumber,
     List<String> businessRoles,
     List<Object> documents,
@@ -30,7 +30,7 @@ public record CreatePersonRequest(
     private String dateOfBirth;
     private String gender;
     private List<String> nationalities;
-    private Map<String, Object> address;
+    private Address address;
     private String phoneNumber;
     private List<String> businessRoles;
     private List<Object> documents;
@@ -83,7 +83,7 @@ public record CreatePersonRequest(
     /**
      * Sets the person's postal address payload.
      */
-    public Builder address(Map<String, Object> address) {
+    public Builder address(Address address) {
       this.address = address;
       return this;
     }

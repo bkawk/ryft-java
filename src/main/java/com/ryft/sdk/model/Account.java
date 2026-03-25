@@ -7,7 +7,7 @@ import java.util.Map;
  */
 public record Account(
     String id,
-    String entityType,
+    AccountEntityType entityType,
     String email,
     Map<String, Object> metadata
 ) {

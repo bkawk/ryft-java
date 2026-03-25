@@ -1,11 +1,12 @@
 package com.ryft.sdk.request;
 
+import com.ryft.sdk.model.CaptureFlow;
 import java.util.Map;
 
 public record UpdatePaymentSessionRequest(
     Integer amount,
     String customerEmail,
-    String captureFlow,
+    CaptureFlow captureFlow,
     Map<String, Object> metadata
 ) {
   /**
@@ -18,7 +19,7 @@ public record UpdatePaymentSessionRequest(
   public static final class Builder {
     private Integer amount;
     private String customerEmail;
-    private String captureFlow;
+    private CaptureFlow captureFlow;
     private Map<String, Object> metadata;
 
     /**
@@ -38,9 +39,9 @@ public record UpdatePaymentSessionRequest(
     }
 
     /**
-     * Sets the capture flow using the API's string values.
+     * Sets the capture flow.
      */
-    public Builder captureFlow(String captureFlow) {
+    public Builder captureFlow(CaptureFlow captureFlow) {
       this.captureFlow = captureFlow;
       return this;
     }

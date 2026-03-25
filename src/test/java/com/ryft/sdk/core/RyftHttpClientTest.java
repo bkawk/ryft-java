@@ -7,8 +7,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.ryft.sdk.model.ApiError;
 import com.ryft.sdk.model.ApiList;
+import com.ryft.sdk.model.CaptureFlow;
 import com.ryft.sdk.model.Customer;
+import com.ryft.sdk.model.EntryMode;
+import com.ryft.sdk.model.PaymentType;
+import com.ryft.sdk.request.CreatePaymentSessionRequest;
+import com.ryft.sdk.request.PaymentSessionSplitItemRequest;
+import com.ryft.sdk.request.PaymentSessionSplitRequest;
 import com.ryft.sdk.testsupport.FakeHttpClient;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class RyftHttpClientTest {
@@ -90,5 +98,28 @@ class RyftHttpClientTest {
   void typedApiListHandlesMissingPaginationToken() {
     ApiList<Customer> list = new ApiList<>(java.util.List.of(), null);
     assertFalse(list.hasNextPage());
+  }
+
+  @Test
+  void typedRequestModelsSerializeEnumsAndNestedObjects() throws Exception {
+    String json = Json.MAPPER.writeValueAsString(
+        CreatePaymentSessionRequest.builder(500, "GBP")
+            .customerEmail("buyer@example.test")
+            .paymentType(PaymentType.Standard)
+            .entryMode(EntryMode.Online)
+            .captureFlow(CaptureFlow.Automatic)
+            .splits(PaymentSessionSplitRequest.of(List.of(
+                PaymentSessionSplitItemRequest.builder("ac_123", 500)
+                    .description("platform split")
+                    .fee(Map.of("amount", 25))
+                    .build()
+            )))
+            .build()
+    );
+
+    assertTrue(json.contains("\"paymentType\":\"Standard\""));
+    assertTrue(json.contains("\"entryMode\":\"Online\""));
+    assertTrue(json.contains("\"captureFlow\":\"Automatic\""));
+    assertTrue(json.contains("\"splits\":{\"items\":["));
   }
 }

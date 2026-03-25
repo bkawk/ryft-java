@@ -69,6 +69,9 @@ The SDK keeps the raw `JsonNode` access patterns used by the parity harness, but
 
 ```java
 import com.ryft.sdk.request.CreatePaymentSessionRequest;
+import com.ryft.sdk.model.CaptureFlow;
+import com.ryft.sdk.model.EntryMode;
+import com.ryft.sdk.model.PaymentType;
 import com.ryft.sdk.request.PageRequest;
 import com.ryft.sdk.request.TimeRangePageRequest;
 import com.ryft.sdk.request.UpdateSubscriptionRequest;
@@ -76,9 +79,9 @@ import com.ryft.sdk.request.UpdateSubscriptionRequest;
 var session = client.paymentSessions().create(
     CreatePaymentSessionRequest.builder(500, "GBP")
         .customerEmail("buyer@example.test")
-        .paymentType("Standard")
-        .entryMode("Online")
-        .captureFlow("Automatic")
+        .paymentType(PaymentType.Standard)
+        .entryMode(EntryMode.Online)
+        .captureFlow(CaptureFlow.Automatic)
         .metadata(Map.of("source", "typed-example"))
         .build()
 );

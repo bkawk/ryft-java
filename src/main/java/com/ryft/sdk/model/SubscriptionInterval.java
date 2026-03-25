@@ -1,4 +1,7 @@
 package com.ryft.sdk.model;
 
-public record SubscriptionInterval(String unit, Integer count, Integer times) {
+/**
+ * Recurring interval configuration for a subscription price.
+ */
+public record SubscriptionInterval(SubscriptionIntervalUnit unit, Integer count, Integer times) {
 }

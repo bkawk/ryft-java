@@ -4,7 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.ryft.sdk.core.RyftConfig;
 import com.ryft.sdk.core.RyftHttpClient;
+import com.ryft.sdk.model.AccountEntityType;
 import com.ryft.sdk.model.BillingAddress;
+import com.ryft.sdk.model.CaptureFlow;
+import com.ryft.sdk.model.EntryMode;
+import com.ryft.sdk.model.PaymentType;
 import com.ryft.sdk.request.CreateAccountAuthorizationRequest;
 import com.ryft.sdk.request.CreateAccountRequest;
 import com.ryft.sdk.request.CreateCustomerRequest;
@@ -44,6 +48,9 @@ class ServiceRoutingTest {
     service.createForAccount(
         CreatePaymentSessionRequest.builder(500, "GBP")
             .customerEmail("buyer@example.test")
+            .paymentType(PaymentType.Standard)
+            .entryMode(EntryMode.Online)
+            .captureFlow(CaptureFlow.Automatic)
             .metadata(Map.of("source", "service-test"))
             .build(),
         "ac_123"
@@ -112,7 +119,7 @@ class ServiceRoutingTest {
     ));
 
     var account = service.create(
-        CreateAccountRequest.builder("Business", "biz@example.com")
+        CreateAccountRequest.builder(AccountEntityType.Business, "biz@example.com")
             .metadata(Map.of("source", "typed"))
             .build()
     );

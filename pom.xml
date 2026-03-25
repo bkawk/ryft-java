@@ -8,6 +8,29 @@
   <version>0.1.0-SNAPSHOT</version>
   <name>ryft-java</name>
   <description>Java SDK for the Ryft API</description>
+  <url>https://github.com/ryftpay/ryft-java</url>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Ryft</name>
+      <organization>Ryft</organization>
+      <organizationUrl>https://ryftpay.com</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:https://github.com/ryftpay/ryft-java.git</connection>
+    <developerConnection>scm:git:git@github.com:ryftpay/ryft-java.git</developerConnection>
+    <url>https://github.com/ryftpay/ryft-java</url>
+  </scm>
 
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
@@ -58,6 +81,35 @@
         <configuration>
           <useModulePath>false</useModulePath>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.11.2</version>
+        <configuration>
+          <source>${maven.compiler.release}</source>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

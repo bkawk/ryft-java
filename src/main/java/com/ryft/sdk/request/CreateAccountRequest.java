@@ -1,30 +1,38 @@
 package com.ryft.sdk.request;
 
+import com.ryft.sdk.model.AccountEntityType;
+import com.ryft.sdk.model.OnboardingFlow;
 import java.util.Map;
 
+/**
+ * Typed connected-account create payload with a builder-style API.
+ */
 public record CreateAccountRequest(
-    String entityType,
+    AccountEntityType entityType,
     String email,
     Map<String, Object> metadata,
-    String onboardingFlow,
-    Map<String, Object> termsOfService,
-    Map<String, Object> individual,
-    Map<String, Object> business
+    OnboardingFlow onboardingFlow,
+    TermsOfService termsOfService,
+    IndividualDetails individual,
+    BusinessDetails business
 ) {
-  public static Builder builder(String entityType, String email) {
+  /**
+   * Starts a typed connected-account builder.
+   */
+  public static Builder builder(AccountEntityType entityType, String email) {
     return new Builder(entityType, email);
   }
 
   public static final class Builder {
-    private final String entityType;
+    private final AccountEntityType entityType;
     private final String email;
     private Map<String, Object> metadata;
-    private String onboardingFlow;
-    private Map<String, Object> termsOfService;
-    private Map<String, Object> individual;
-    private Map<String, Object> business;
+    private OnboardingFlow onboardingFlow;
+    private TermsOfService termsOfService;
+    private IndividualDetails individual;
+    private BusinessDetails business;
 
-    private Builder(String entityType, String email) {
+    private Builder(AccountEntityType entityType, String email) {
       this.entityType = entityType;
       this.email = email;
     }
@@ -34,22 +42,34 @@ public record CreateAccountRequest(
       return this;
     }
 
-    public Builder onboardingFlow(String onboardingFlow) {
+    /**
+     * Sets the onboarding flow.
+     */
+    public Builder onboardingFlow(OnboardingFlow onboardingFlow) {
       this.onboardingFlow = onboardingFlow;
       return this;
     }
 
-    public Builder termsOfService(Map<String, Object> termsOfService) {
+    /**
+     * Sets the terms-of-service payload.
+     */
+    public Builder termsOfService(TermsOfService termsOfService) {
       this.termsOfService = termsOfService;
       return this;
     }
 
-    public Builder individual(Map<String, Object> individual) {
+    /**
+     * Sets individual-specific account details.
+     */
+    public Builder individual(IndividualDetails individual) {
       this.individual = individual;
       return this;
     }
 
-    public Builder business(Map<String, Object> business) {
+    /**
+     * Sets business-specific account details.
+     */
+    public Builder business(BusinessDetails business) {
       this.business = business;
       return this;
     }

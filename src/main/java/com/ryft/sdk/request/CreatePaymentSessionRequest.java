@@ -1,24 +1,33 @@
 package com.ryft.sdk.request;
 
+import com.ryft.sdk.model.CaptureFlow;
 import com.ryft.sdk.model.IdReference;
+import com.ryft.sdk.model.EntryMode;
+import com.ryft.sdk.model.PaymentType;
 import java.util.Map;
 
+/**
+ * Typed payment-session create payload with a builder-style API.
+ */
 public record CreatePaymentSessionRequest(
     Integer amount,
     String currency,
     String customerEmail,
     IdReference customerDetails,
-    String paymentType,
-    String entryMode,
-    String captureFlow,
+    PaymentType paymentType,
+    EntryMode entryMode,
+    CaptureFlow captureFlow,
     String returnUrl,
     Integer platformFee,
-    Map<String, Object> splits,
+    PaymentSessionSplitRequest splits,
     IdReference previousPayment,
     Map<String, Object> rebillingDetail,
     Map<String, Object> attemptPayment,
     Map<String, Object> metadata
 ) {
+  /**
+   * Starts a typed payment-session builder.
+   */
   public static Builder builder(Integer amount, String currency) {
     return new Builder(amount, currency);
   }
@@ -28,12 +37,12 @@ public record CreatePaymentSessionRequest(
     private final String currency;
     private String customerEmail;
     private IdReference customerDetails;
-    private String paymentType = "Standard";
-    private String entryMode = "Online";
-    private String captureFlow = "Automatic";
+    private PaymentType paymentType = PaymentType.Standard;
+    private EntryMode entryMode = EntryMode.Online;
+    private CaptureFlow captureFlow = CaptureFlow.Automatic;
     private String returnUrl;
     private Integer platformFee;
-    private Map<String, Object> splits;
+    private PaymentSessionSplitRequest splits;
     private IdReference previousPayment;
     private Map<String, Object> rebillingDetail;
     private Map<String, Object> attemptPayment;
@@ -54,17 +63,26 @@ public record CreatePaymentSessionRequest(
       return this;
     }
 
-    public Builder paymentType(String paymentType) {
+    /**
+     * Sets the payment session type.
+     */
+    public Builder paymentType(PaymentType paymentType) {
       this.paymentType = paymentType;
       return this;
     }
 
-    public Builder entryMode(String entryMode) {
+    /**
+     * Sets how payment details will be collected.
+     */
+    public Builder entryMode(EntryMode entryMode) {
       this.entryMode = entryMode;
       return this;
     }
 
-    public Builder captureFlow(String captureFlow) {
+    /**
+     * Sets whether the payment should capture automatically or manually.
+     */
+    public Builder captureFlow(CaptureFlow captureFlow) {
       this.captureFlow = captureFlow;
       return this;
     }
@@ -79,7 +97,10 @@ public record CreatePaymentSessionRequest(
       return this;
     }
 
-    public Builder splits(Map<String, Object> splits) {
+    /**
+     * Sets split-payment allocations.
+     */
+    public Builder splits(PaymentSessionSplitRequest splits) {
       this.splits = splits;
       return this;
     }

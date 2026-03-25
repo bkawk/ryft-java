@@ -65,7 +65,7 @@ examples/http-jdk/src/main/java/com/ryft/examples/httpjdk/HttpServerExample.java
 
 ## Idiomatic Usage
 
-The SDK keeps the raw `JsonNode` access patterns used by the parity harness, but it also exposes typed request builders and typed response models for the most common flows:
+The SDK keeps the raw `JsonNode` access patterns used by the parity harness, but it also exposes typed request builders and typed response models for the most common flows, including customers, payment sessions, subscriptions, accounts, persons, transfers, payouts, webhooks, and payment methods:
 
 ```java
 import com.ryft.sdk.request.CreatePaymentSessionRequest;

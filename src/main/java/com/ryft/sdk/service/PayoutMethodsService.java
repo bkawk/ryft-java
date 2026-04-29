@@ -12,7 +12,7 @@ public final class PayoutMethodsService extends BaseService {
   }
 
   public JsonNode create(String accountId, Object request) {
-    return create("accounts/" + accountId + "/payout-methods", request);
+    return super.create("accounts/" + accountId + "/payout-methods", request);
   }
 
   public JsonNode get(String accountId, String payoutMethodId) {

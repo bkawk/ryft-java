@@ -17,7 +17,7 @@ public final class PayoutsService extends BaseService {
   }
 
   public JsonNode create(String accountId, Object request) {
-    return create("accounts/" + accountId + "/payouts", request);
+    return super.create("accounts/" + accountId + "/payouts", request);
   }
 
   public Payout create(String accountId, CreatePayoutRequest request) {

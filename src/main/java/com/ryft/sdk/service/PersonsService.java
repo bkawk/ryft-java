@@ -19,7 +19,7 @@ public final class PersonsService extends BaseService {
   }
 
   public JsonNode create(String accountId, Object request) {
-    return create("accounts/" + accountId + "/persons", request);
+    return super.create("accounts/" + accountId + "/persons", request);
   }
 
   public Person create(String accountId, CreatePersonRequest request) {

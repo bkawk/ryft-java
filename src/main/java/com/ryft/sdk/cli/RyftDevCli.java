@@ -6,6 +6,7 @@ import com.ryft.sdk.RyftClient;
 import com.ryft.sdk.core.Json;
 import com.ryft.sdk.model.ApiError;
 import com.ryft.sdk.model.ApiList;
+import com.ryft.sdk.request.RefundPaymentSessionRequest;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -158,7 +159,12 @@ public final class RyftDevCli {
   private static void handlePaymentSessionRefund(RyftClient client, String[] args) {
     String id = requiredArg(args, 1, "payment session id");
     Map<String, Object> raw = args.length > 2 && !args[2].isBlank() ? parseMap(args[2]) : Map.of();
-    printJson(client.paymentSessions().refund(id, raw), false);
+    RefundPaymentSessionRequest request = RefundPaymentSessionRequest.builder()
+        .amount(intOrNull(raw.get("amount")))
+        .reason(stringOrNull(raw.get("reason")))
+        .refundPlatformFee(boolOrNull(raw.get("refundPlatformFee")))
+        .build();
+    printJson(client.paymentSessions().refund(id, request), false);
   }
 
   private static void handleWebhookCreate(RyftClient client, String[] args) {
@@ -188,7 +194,7 @@ public final class RyftDevCli {
     Map<String, Object> request = new LinkedHashMap<>();
     request.put("entityType", entityType);
     request.put("email", email);
-    request.put("onboardingFlow", blankToDefault(optionalArg(args, 5), "HostedAccountLink"));
+    request.put("onboardingFlow", blankToDefault(optionalArg(args, 5), "NonHosted"));
     request.put("termsOfService", Map.of("acceptance", Map.of("ipAddress", "127.0.0.1")));
     if (args.length > 3 && !args[3].isBlank()) {
       request.put("metadata", parseMap(args[3]));
@@ -209,14 +215,14 @@ public final class RyftDevCli {
     String accountId = requiredArg(args, 1, "account id");
     String email = requiredArg(args, 2, "email");
     Map<String, Object> request = new LinkedHashMap<>();
-    request.put("firstName", "SDK");
+    request.put("firstName", "Sdk");
     request.put("lastName", "Person");
     request.put("email", email);
     request.put("dateOfBirth", "1990-01-01");
     request.put("gender", "Male");
     request.put("nationalities", List.of("GB"));
     request.put("address", defaultAddress());
-    request.put("phoneNumber", "+447700900000");
+    request.put("phoneNumber", "+447000000000");
     request.put("businessRoles", List.of("Director"));
     request.put("documents", List.of());
     if (args.length > 3 && !args[3].isBlank()) {
@@ -238,10 +244,10 @@ public final class RyftDevCli {
         "currency", "GBP",
         "country", "GB",
         "bankAccount", Map.of(
-            "accountNumberType", "IBAN",
-            "accountNumber", "GB33BUKB20201555555555",
+            "accountNumberType", "UnitedKingdom",
+            "accountNumber", "31926819",
             "bankIdType", "SortCode",
-            "bankId", "202015"
+            "bankId", "601613"
         )
     );
     printJson(client.payoutMethods().create(accountId, request), false);
@@ -265,7 +271,7 @@ public final class RyftDevCli {
 
   private static void handleTransferCreate(RyftClient client, String[] args) {
     Map<String, Object> request = new LinkedHashMap<>();
-    request.put("destinationAccountId", requiredArg(args, 1, "destination account id"));
+    request.put("destination", Map.of("accountId", requiredArg(args, 1, "destination account id")));
     request.put("amount", parseIntArg(args, 2, "amount"));
     request.put("currency", requiredArg(args, 3, "currency"));
     if (args.length > 4 && !args[4].isBlank()) {
@@ -356,7 +362,7 @@ public final class RyftDevCli {
   private static Map<String, Object> defaultAccountBody(String entityType, String email) {
     if (entityType.equalsIgnoreCase("Individual")) {
       return Map.of(
-          "firstName", "SDK",
+          "firstName", "Sdk",
           "lastName", "Individual",
           "email", email,
           "dateOfBirth", "1990-01-01",
@@ -368,7 +374,7 @@ public final class RyftDevCli {
 
     return Map.of(
         "name", "SDK Business " + System.currentTimeMillis(),
-        "type", "PrivateLimitedCompany",
+        "type", "PrivateCompany",
         "registrationNumber", "12345678",
         "registeredAddress", defaultAddress(),
         "contactEmail", email
@@ -489,6 +495,36 @@ public final class RyftDevCli {
     } catch (NumberFormatException error) {
       throw new IllegalArgumentException("invalid integer for " + label + ": " + args[index], error);
     }
+  }
+
+  private static Integer intOrNull(Object value) {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof Number number) {
+      return number.intValue();
+    }
+    String text = value.toString();
+    return text.isBlank() ? null : Integer.parseInt(text);
+  }
+
+  private static String stringOrNull(Object value) {
+    if (value == null) {
+      return null;
+    }
+    String text = value.toString();
+    return text.isBlank() ? null : text;
+  }
+
+  private static Boolean boolOrNull(Object value) {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof Boolean bool) {
+      return bool;
+    }
+    String text = value.toString();
+    return text.isBlank() ? null : Boolean.parseBoolean(text);
   }
 
   private static void putIfNotBlank(Map<String, Object> target, String key, String value) {

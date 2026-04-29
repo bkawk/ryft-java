@@ -1,5 +1,6 @@
 package com.ryft.sdk.request;
 
+import com.ryft.sdk.model.Metadata;
 import java.util.Map;
 
 /**
@@ -10,7 +11,7 @@ public record PaymentSessionSplitItemRequest(
     Integer amount,
     String description,
     FeeRequest fee,
-    Map<String, Object> metadata
+    Metadata metadata
 ) {
   /**
    * Starts a typed split-allocation builder.
@@ -24,7 +25,7 @@ public record PaymentSessionSplitItemRequest(
     private final Integer amount;
     private String description;
     private FeeRequest fee;
-    private Map<String, Object> metadata;
+    private Metadata metadata;
 
     private Builder(String accountId, Integer amount) {
       this.accountId = accountId;
@@ -50,8 +51,16 @@ public record PaymentSessionSplitItemRequest(
     /**
      * Sets application-defined metadata for the split allocation.
      */
-    public Builder metadata(Map<String, Object> metadata) {
+    public Builder metadata(Metadata metadata) {
       this.metadata = metadata;
+      return this;
+    }
+
+    /**
+     * Sets application-defined metadata for the split allocation.
+     */
+    public Builder metadata(Map<String, Object> metadata) {
+      this.metadata = Metadata.of(metadata);
       return this;
     }
 

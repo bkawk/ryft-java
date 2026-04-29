@@ -1,12 +1,13 @@
 package com.ryft.sdk.request;
 
+import com.ryft.sdk.model.Metadata;
 import java.util.Map;
 
 public record CreateTransferRequest(
     String destinationAccountId,
     Integer amount,
     String currency,
-    Map<String, Object> metadata
+    Metadata metadata
 ) {
   /**
    * Starts a typed transfer-create builder.
@@ -19,7 +20,7 @@ public record CreateTransferRequest(
     private final String destinationAccountId;
     private final Integer amount;
     private final String currency;
-    private Map<String, Object> metadata;
+    private Metadata metadata;
 
     private Builder(String destinationAccountId, Integer amount, String currency) {
       this.destinationAccountId = destinationAccountId;
@@ -30,8 +31,16 @@ public record CreateTransferRequest(
     /**
      * Sets application-defined metadata for the transfer.
      */
-    public Builder metadata(Map<String, Object> metadata) {
+    public Builder metadata(Metadata metadata) {
       this.metadata = metadata;
+      return this;
+    }
+
+    /**
+     * Sets application-defined metadata for the transfer.
+     */
+    public Builder metadata(Map<String, Object> metadata) {
+      this.metadata = Metadata.of(metadata);
       return this;
     }
 

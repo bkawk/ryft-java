@@ -3,6 +3,7 @@ package com.ryft.sdk.request;
 import com.ryft.sdk.model.CaptureFlow;
 import com.ryft.sdk.model.IdReference;
 import com.ryft.sdk.model.EntryMode;
+import com.ryft.sdk.model.Metadata;
 import com.ryft.sdk.model.PaymentType;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public record CreatePaymentSessionRequest(
     IdReference previousPayment,
     RebillingDetailRequest rebillingDetail,
     AttemptPaymentRequest attemptPayment,
-    Map<String, Object> metadata
+    Metadata metadata
 ) {
   /**
    * Starts a typed payment-session builder.
@@ -46,7 +47,7 @@ public record CreatePaymentSessionRequest(
     private IdReference previousPayment;
     private RebillingDetailRequest rebillingDetail;
     private AttemptPaymentRequest attemptPayment;
-    private Map<String, Object> metadata;
+    private Metadata metadata;
 
     private Builder(Integer amount, String currency) {
       this.amount = amount;
@@ -126,8 +127,19 @@ public record CreatePaymentSessionRequest(
       return this;
     }
 
-    public Builder metadata(Map<String, Object> metadata) {
+    /**
+     * Sets application-defined metadata for the payment session.
+     */
+    public Builder metadata(Metadata metadata) {
       this.metadata = metadata;
+      return this;
+    }
+
+    /**
+     * Sets application-defined metadata for the payment session.
+     */
+    public Builder metadata(Map<String, Object> metadata) {
+      this.metadata = Metadata.of(metadata);
       return this;
     }
 

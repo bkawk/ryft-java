@@ -27,8 +27,8 @@ Then depend on it from another Maven project with:
 ```java
 import com.ryft.sdk.RyftClient;
 import com.ryft.sdk.model.ApiError;
+import com.ryft.sdk.model.Metadata;
 import com.ryft.sdk.request.CreateCustomerRequest;
-import java.util.Map;
 
 public final class Example {
   public static void main(String[] args) {
@@ -39,7 +39,7 @@ public final class Example {
           CreateCustomerRequest.builder("sdk-example@example.test")
               .firstName("Java")
               .lastName("Example")
-              .metadata(Map.of("source", "readme"))
+              .metadata(Metadata.of("source", "readme"))
               .build()
       );
 
@@ -65,13 +65,15 @@ examples/http-jdk/src/main/java/com/ryft/examples/httpjdk/HttpServerExample.java
 
 ## Idiomatic Usage
 
-The SDK keeps the raw `JsonNode` access patterns used by the parity harness, but it also exposes typed request builders and typed response models for the most common flows, including customers, payment sessions, subscriptions, accounts, persons, transfers, payouts, webhooks, and payment methods:
+The SDK is designed around typed request builders and typed response models for normal Java usage. Low-level flexible request paths still exist for parity tooling and open-ended payloads, but the primary developer experience is the typed API across customers, payment sessions, subscriptions, accounts, persons, transfers, payouts, disputes, webhooks, and payment methods:
 
 ```java
-import com.ryft.sdk.request.CreatePaymentSessionRequest;
 import com.ryft.sdk.model.CaptureFlow;
 import com.ryft.sdk.model.EntryMode;
+import com.ryft.sdk.model.Metadata;
 import com.ryft.sdk.model.PaymentType;
+import com.ryft.sdk.request.CreatePaymentSessionRequest;
+import com.ryft.sdk.request.RefundPaymentSessionRequest;
 import com.ryft.sdk.request.PageRequest;
 import com.ryft.sdk.request.TimeRangePageRequest;
 import com.ryft.sdk.request.UpdateSubscriptionRequest;
@@ -82,7 +84,7 @@ var session = client.paymentSessions().create(
         .paymentType(PaymentType.Standard)
         .entryMode(EntryMode.Online)
         .captureFlow(CaptureFlow.Automatic)
-        .metadata(Map.of("source", "typed-example"))
+        .metadata(Metadata.of("source", "typed-example"))
         .build()
 );
 
@@ -90,12 +92,22 @@ var subscription = client.subscriptions().update(
     "sub_123",
     UpdateSubscriptionRequest.builder()
         .description("Gold plan")
-        .metadata(Map.of("tier", "gold"))
+        .metadata(Metadata.of("tier", "gold"))
+        .build()
+);
+
+var refund = client.paymentSessions().refund(
+    session.id(),
+    RefundPaymentSessionRequest.builder()
+        .amount(100)
+        .reason("RequestedByCustomer")
+        .refundPlatformFee(Boolean.TRUE)
         .build()
 );
 
 System.out.println(session.id());
 System.out.println(subscription.description());
+System.out.println(refund.type());
 ```
 
 Typed list endpoints also support pagination request objects and pagination helpers:
@@ -216,9 +228,13 @@ Example:
 
 ```java
 import com.ryft.sdk.model.ApiError;
+import com.ryft.sdk.request.CreateCustomerRequest;
 
 try {
-  client.customers().create(Map.of("email", ""));
+  client.customers().create(
+      CreateCustomerRequest.builder("")
+          .build()
+  );
 } catch (ApiError error) {
   System.err.printf(
       "Ryft error: status=%d code=%s message=%s%n",

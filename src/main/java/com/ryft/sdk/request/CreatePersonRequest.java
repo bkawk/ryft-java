@@ -1,5 +1,6 @@
 package com.ryft.sdk.request;
 
+import com.ryft.sdk.model.Metadata;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public record CreatePersonRequest(
     String phoneNumber,
     List<String> businessRoles,
     List<Object> documents,
-    Map<String, Object> metadata
+    Metadata metadata
 ) {
   /**
    * Starts a typed person-create builder.
@@ -34,7 +35,7 @@ public record CreatePersonRequest(
     private String phoneNumber;
     private List<String> businessRoles;
     private List<Object> documents;
-    private Map<String, Object> metadata;
+    private Metadata metadata;
 
     private Builder(String email) {
       this.email = email;
@@ -115,8 +116,16 @@ public record CreatePersonRequest(
     /**
      * Sets application-defined metadata for the person.
      */
-    public Builder metadata(Map<String, Object> metadata) {
+    public Builder metadata(Metadata metadata) {
       this.metadata = metadata;
+      return this;
+    }
+
+    /**
+     * Sets application-defined metadata for the person.
+     */
+    public Builder metadata(Map<String, Object> metadata) {
+      this.metadata = Metadata.of(metadata);
       return this;
     }
 

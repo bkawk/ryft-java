@@ -1,9 +1,10 @@
 package com.ryft.sdk.request;
 
 import com.ryft.sdk.model.IdReference;
+import com.ryft.sdk.model.Metadata;
 import com.ryft.sdk.model.SubscriptionInterval;
-import com.ryft.sdk.model.SubscriptionPrice;
 import com.ryft.sdk.model.SubscriptionIntervalUnit;
+import com.ryft.sdk.model.SubscriptionPrice;
 import java.util.Map;
 
 /**
@@ -15,7 +16,7 @@ public record CreateSubscriptionRequest(
     IdReference paymentMethod,
     Integer billingCycleTimestamp,
     SubscriptionPrice price,
-    Map<String, Object> metadata,
+    Metadata metadata,
     SubscriptionPaymentSettings paymentSettings,
     ShippingDetails shippingDetails
 ) {
@@ -29,7 +30,7 @@ public record CreateSubscriptionRequest(
     private final String paymentMethodId;
     private Integer billingCycleTimestamp;
     private SubscriptionPrice price = new SubscriptionPrice(100, "GBP", new SubscriptionInterval(SubscriptionIntervalUnit.Months, 1, 12));
-    private Map<String, Object> metadata;
+    private Metadata metadata;
     private SubscriptionPaymentSettings paymentSettings;
     private ShippingDetails shippingDetails;
 
@@ -56,8 +57,19 @@ public record CreateSubscriptionRequest(
       return this;
     }
 
-    public Builder metadata(Map<String, Object> metadata) {
+    /**
+     * Sets application-defined metadata for the subscription.
+     */
+    public Builder metadata(Metadata metadata) {
       this.metadata = metadata;
+      return this;
+    }
+
+    /**
+     * Sets application-defined metadata for the subscription.
+     */
+    public Builder metadata(Map<String, Object> metadata) {
+      this.metadata = Metadata.of(metadata);
       return this;
     }
 

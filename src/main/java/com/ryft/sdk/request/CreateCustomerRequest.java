@@ -1,12 +1,13 @@
 package com.ryft.sdk.request;
 
+import com.ryft.sdk.model.Metadata;
 import java.util.Map;
 
 public record CreateCustomerRequest(
     String email,
     String firstName,
     String lastName,
-    Map<String, Object> metadata
+    Metadata metadata
 ) {
   /**
    * Starts a typed customer-create builder.
@@ -19,7 +20,7 @@ public record CreateCustomerRequest(
     private final String email;
     private String firstName;
     private String lastName;
-    private Map<String, Object> metadata;
+    private Metadata metadata;
 
     private Builder(String email) {
       this.email = email;
@@ -44,8 +45,16 @@ public record CreateCustomerRequest(
     /**
      * Sets application-defined metadata to attach to the customer.
      */
-    public Builder metadata(Map<String, Object> metadata) {
+    public Builder metadata(Metadata metadata) {
       this.metadata = metadata;
+      return this;
+    }
+
+    /**
+     * Sets application-defined metadata to attach to the customer.
+     */
+    public Builder metadata(Map<String, Object> metadata) {
+      this.metadata = Metadata.of(metadata);
       return this;
     }
 

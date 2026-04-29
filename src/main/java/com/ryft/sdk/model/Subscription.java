@@ -1,7 +1,5 @@
 package com.ryft.sdk.model;
 
-import java.util.Map;
-
 /**
  * Subscription response model.
  */
@@ -11,6 +9,6 @@ public record Subscription(
     IdReference customer,
     IdReference paymentMethod,
     SubscriptionBillingDetail billingDetail,
-    Map<String, Object> metadata
+    Metadata metadata
 ) {
 }

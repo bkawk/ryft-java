@@ -1,7 +1,5 @@
 package com.ryft.sdk.model;
 
-import java.util.Map;
-
 /**
  * Customer response model.
  */
@@ -10,6 +8,6 @@ public record Customer(
     String email,
     String firstName,
     String lastName,
-    Map<String, Object> metadata
+    Metadata metadata
 ) {
 }

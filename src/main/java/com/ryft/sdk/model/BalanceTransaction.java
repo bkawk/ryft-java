@@ -1,7 +1,5 @@
 package com.ryft.sdk.model;
 
-import java.util.Map;
-
 /**
  * Balance transaction response model.
  */
@@ -10,6 +8,6 @@ public record BalanceTransaction(
     Integer amount,
     String currency,
     String type,
-    Map<String, Object> metadata
+    Metadata metadata
 ) {
 }

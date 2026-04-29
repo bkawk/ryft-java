@@ -61,7 +61,7 @@ public final class PersonsService extends BaseService {
   }
 
   public Person update(String accountId, String personId, UpdatePersonRequest request) {
-    return patch("accounts/" + accountId + "/persons/" + personId, request.payload(), Person.class);
+    return patch("accounts/" + accountId + "/persons/" + personId, request, Person.class);
   }
 
   public DeletedResource delete(String accountId, String personId) {

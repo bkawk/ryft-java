@@ -1,6 +1,6 @@
 package com.ryft.sdk.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.ryft.sdk.core.Json;
 import com.ryft.sdk.core.QueryParams;
 import com.ryft.sdk.core.RyftHttpClient;
 import com.ryft.sdk.model.ApiList;
@@ -15,11 +15,11 @@ public final class DisputesService extends BaseService {
     super(client);
   }
 
-  public ApiList list(Integer startTimestamp, Integer endTimestamp, boolean ascending, Integer limit, String startsAfter) {
+  public ApiList<Dispute> list(Integer startTimestamp, Integer endTimestamp, boolean ascending, Integer limit, String startsAfter) {
     QueryParams query = QueryParams.list(ascending, limit, startsAfter)
         .put("startTimestamp", startTimestamp)
         .put("endTimestamp", endTimestamp);
-    return list("disputes", query);
+    return list("disputes", query, Dispute.class);
   }
 
   /**
@@ -36,44 +36,23 @@ public final class DisputesService extends BaseService {
     return list("disputes", query, Dispute.class);
   }
 
-  public JsonNode get(String disputeId) {
-    return getEntity("disputes/" + disputeId);
-  }
-
-  /**
-   * Retrieves a dispute as a typed model.
-   */
-  public Dispute getDispute(String disputeId) {
+  public Dispute get(String disputeId) {
     return getEntity("disputes/" + disputeId, Dispute.class);
   }
 
-  public JsonNode accept(String disputeId) {
-    return create("disputes/" + disputeId + "/accept", null);
-  }
-
-  public JsonNode challenge(String disputeId) {
-    return create("disputes/" + disputeId + "/challenge", null);
-  }
-
-  /**
-   * Accepts a dispute and returns the updated typed model.
-   */
-  public Dispute acceptDispute(String disputeId) {
+  public Dispute accept(String disputeId) {
     return create("disputes/" + disputeId + "/accept", null, Dispute.class);
   }
 
-  /**
-   * Challenges a dispute and returns the updated typed model.
-   */
-  public Dispute challengeDispute(String disputeId) {
+  public Dispute challenge(String disputeId) {
     return create("disputes/" + disputeId + "/challenge", null, Dispute.class);
   }
 
-  public JsonNode addEvidence(String disputeId, Object request) {
-    return patch("disputes/" + disputeId + "/evidence", request);
+  public Dispute addEvidence(String disputeId, Object request) {
+    return patch("disputes/" + disputeId + "/evidence", request, Dispute.class);
   }
 
-  public JsonNode deleteEvidence(String disputeId, Object request) {
-    return client.delete("disputes/" + disputeId + "/evidence", request, null);
+  public Dispute deleteEvidence(String disputeId, Object request) {
+    return Json.MAPPER.convertValue(client.delete("disputes/" + disputeId + "/evidence", request, null), Dispute.class);
   }
 }

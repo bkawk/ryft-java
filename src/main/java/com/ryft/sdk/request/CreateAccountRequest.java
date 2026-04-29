@@ -1,6 +1,7 @@
 package com.ryft.sdk.request;
 
 import com.ryft.sdk.model.AccountEntityType;
+import com.ryft.sdk.model.Metadata;
 import com.ryft.sdk.model.OnboardingFlow;
 import java.util.Map;
 
@@ -10,7 +11,7 @@ import java.util.Map;
 public record CreateAccountRequest(
     AccountEntityType entityType,
     String email,
-    Map<String, Object> metadata,
+    Metadata metadata,
     OnboardingFlow onboardingFlow,
     TermsOfService termsOfService,
     IndividualDetails individual,
@@ -26,7 +27,7 @@ public record CreateAccountRequest(
   public static final class Builder {
     private final AccountEntityType entityType;
     private final String email;
-    private Map<String, Object> metadata;
+    private Metadata metadata;
     private OnboardingFlow onboardingFlow;
     private TermsOfService termsOfService;
     private IndividualDetails individual;
@@ -37,8 +38,19 @@ public record CreateAccountRequest(
       this.email = email;
     }
 
-    public Builder metadata(Map<String, Object> metadata) {
+    /**
+     * Sets application-defined metadata for the account.
+     */
+    public Builder metadata(Metadata metadata) {
       this.metadata = metadata;
+      return this;
+    }
+
+    /**
+     * Sets application-defined metadata for the account.
+     */
+    public Builder metadata(Map<String, Object> metadata) {
+      this.metadata = Metadata.of(metadata);
       return this;
     }
 

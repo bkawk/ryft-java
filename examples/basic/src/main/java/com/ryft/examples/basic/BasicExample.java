@@ -1,8 +1,9 @@
 package com.ryft.examples.basic;
 
 import com.ryft.sdk.RyftClient;
+import com.ryft.sdk.core.Json;
+import com.ryft.sdk.model.Metadata;
 import com.ryft.sdk.request.CreateCustomerRequest;
-import java.util.Map;
 
 public final class BasicExample {
   private BasicExample() {
@@ -19,10 +20,14 @@ public final class BasicExample {
         CreateCustomerRequest.builder("sdk-example@example.test")
             .firstName("Java")
             .lastName("Example")
-            .metadata(Map.of("source", "basic-example"))
+            .metadata(Metadata.of("source", "basic-example"))
             .build()
     );
 
-    System.out.println(customer.toPrettyString());
+    try {
+      System.out.println(Json.MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(customer));
+    } catch (Exception error) {
+      throw new IllegalStateException("Failed to render customer response", error);
+    }
   }
 }

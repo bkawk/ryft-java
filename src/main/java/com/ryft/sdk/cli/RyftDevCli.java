@@ -116,7 +116,7 @@ public final class RyftDevCli {
     String id = requiredArg(args, 2, "entity id");
     String parentId = optionalArg(args, 3);
 
-    JsonNode entity = switch (entityType) {
+    Object entity = switch (entityType) {
       case "customer" -> client.customers().get(id);
       case "payment-session" -> parentId == null ? client.paymentSessions().get(id) : client.paymentSessions().getForAccount(id, parentId);
       case "webhook" -> client.webhooks().get(id);
@@ -140,7 +140,7 @@ public final class RyftDevCli {
 
   private static void handlePaymentSessionCreate(RyftClient client, String[] args) {
     AccountScopedRequest request = buildPaymentSessionCreateRequest(parseMap(requiredArg(args, 1, "options json")));
-    JsonNode response = request.accountId() == null
+    Object response = request.accountId() == null
         ? client.paymentSessions().create(request.request())
         : client.paymentSessions().createForAccount(request.request(), request.accountId());
     printJson(response, false);
@@ -149,7 +149,7 @@ public final class RyftDevCli {
   private static void handlePaymentSessionUpdate(RyftClient client, String[] args) {
     String id = requiredArg(args, 1, "payment session id");
     AccountScopedRequest request = buildAccountScopedRequest(parseMap(requiredArg(args, 2, "options json")));
-    JsonNode response = request.accountId() == null
+    Object response = request.accountId() == null
         ? client.paymentSessions().update(id, request.request())
         : client.paymentSessions().updateForAccount(id, request.request(), request.accountId());
     printJson(response, false);

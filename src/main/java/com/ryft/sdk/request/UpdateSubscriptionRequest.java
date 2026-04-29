@@ -1,8 +1,9 @@
 package com.ryft.sdk.request;
 
+import com.ryft.sdk.model.Metadata;
 import java.util.Map;
 
-public record UpdateSubscriptionRequest(String description, Map<String, Object> metadata) {
+public record UpdateSubscriptionRequest(String description, Metadata metadata) {
   /**
    * Starts a typed subscription-update builder.
    */
@@ -12,7 +13,7 @@ public record UpdateSubscriptionRequest(String description, Map<String, Object> 
 
   public static final class Builder {
     private String description;
-    private Map<String, Object> metadata;
+    private Metadata metadata;
 
     /**
      * Sets the subscription description.
@@ -25,8 +26,16 @@ public record UpdateSubscriptionRequest(String description, Map<String, Object> 
     /**
      * Sets application-defined metadata for the subscription.
      */
-    public Builder metadata(Map<String, Object> metadata) {
+    public Builder metadata(Metadata metadata) {
       this.metadata = metadata;
+      return this;
+    }
+
+    /**
+     * Sets application-defined metadata for the subscription.
+     */
+    public Builder metadata(Map<String, Object> metadata) {
+      this.metadata = Metadata.of(metadata);
       return this;
     }
 

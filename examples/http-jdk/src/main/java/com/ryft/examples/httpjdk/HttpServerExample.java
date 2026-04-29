@@ -3,6 +3,8 @@ package com.ryft.examples.httpjdk;
 import com.ryft.sdk.RyftClient;
 import com.ryft.sdk.core.Json;
 import com.ryft.sdk.model.ApiError;
+import com.ryft.sdk.model.Metadata;
+import com.ryft.sdk.request.CreateCustomerRequest;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
@@ -38,7 +40,14 @@ public final class HttpServerExample {
     try {
       @SuppressWarnings("unchecked")
       Map<String, Object> request = Json.MAPPER.readValue(exchange.getRequestBody(), Map.class);
-      writeJson(exchange, 200, client.customers().create(request));
+      var customer = client.customers().create(
+          CreateCustomerRequest.builder(String.valueOf(request.getOrDefault("email", "")))
+              .firstName(stringValue(request.get("firstName")))
+              .lastName(stringValue(request.get("lastName")))
+              .metadata(metadataValue(request.get("metadata")))
+              .build()
+      );
+      writeJson(exchange, 200, customer);
     } catch (ApiError error) {
       writeJson(exchange, error.getStatus(), Map.of(
           "code", error.getCode(),
@@ -58,5 +67,17 @@ public final class HttpServerExample {
     try (OutputStream output = exchange.getResponseBody()) {
       output.write(body);
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  private static Metadata metadataValue(Object value) {
+    if (value instanceof Map<?, ?> rawMap) {
+      return Metadata.of((Map<String, Object>) rawMap);
+    }
+    return null;
+  }
+
+  private static String stringValue(Object value) {
+    return value == null ? null : String.valueOf(value);
   }
 }

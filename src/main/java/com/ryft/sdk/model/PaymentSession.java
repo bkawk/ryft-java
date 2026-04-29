@@ -1,7 +1,5 @@
 package com.ryft.sdk.model;
 
-import java.util.Map;
-
 /**
  * Payment session response model.
  */
@@ -11,7 +9,7 @@ public record PaymentSession(
     String currency,
     String customerEmail,
     Integer platformFee,
-    Map<String, Object> metadata,
+    Metadata metadata,
     PaymentSessionSplitDetail splitPaymentDetail
 ) {
 }

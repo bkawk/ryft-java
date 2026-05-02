@@ -4,12 +4,18 @@ import com.ryft.sdk.core.RyftConfig;
 import com.ryft.sdk.core.RyftHttpClient;
 import com.ryft.sdk.service.AccountLinksService;
 import com.ryft.sdk.service.AccountsService;
+import com.ryft.sdk.service.ApplePayService;
 import com.ryft.sdk.service.BalanceTransactionsService;
 import com.ryft.sdk.service.BalancesService;
 import com.ryft.sdk.service.CustomersService;
 import com.ryft.sdk.service.DisputesService;
 import com.ryft.sdk.service.EventsService;
 import com.ryft.sdk.service.FilesService;
+import com.ryft.sdk.service.InPersonLocationsService;
+import com.ryft.sdk.service.InPersonOrdersService;
+import com.ryft.sdk.service.InPersonProductsService;
+import com.ryft.sdk.service.InPersonSkusService;
+import com.ryft.sdk.service.InPersonTerminalsService;
 import com.ryft.sdk.service.PaymentMethodsService;
 import com.ryft.sdk.service.PaymentSessionsService;
 import com.ryft.sdk.service.PayoutMethodsService;
@@ -39,6 +45,12 @@ public final class RyftClient {
   private final PlatformFeesService platformFees;
   private final FilesService files;
   private final DisputesService disputes;
+  private final ApplePayService applePay;
+  private final InPersonLocationsService inPersonLocations;
+  private final InPersonTerminalsService inPersonTerminals;
+  private final InPersonProductsService inPersonProducts;
+  private final InPersonSkusService inPersonSkus;
+  private final InPersonOrdersService inPersonOrders;
 
   /**
    * Creates a client using the provided Ryft secret key.
@@ -69,6 +81,12 @@ public final class RyftClient {
     this.platformFees = new PlatformFeesService(httpClient);
     this.files = new FilesService(httpClient);
     this.disputes = new DisputesService(httpClient);
+    this.applePay = new ApplePayService(httpClient);
+    this.inPersonLocations = new InPersonLocationsService(httpClient);
+    this.inPersonTerminals = new InPersonTerminalsService(httpClient);
+    this.inPersonProducts = new InPersonProductsService(httpClient);
+    this.inPersonSkus = new InPersonSkusService(httpClient);
+    this.inPersonOrders = new InPersonOrdersService(httpClient);
   }
 
   public CustomersService customers() {
@@ -137,5 +155,29 @@ public final class RyftClient {
 
   public DisputesService disputes() {
     return disputes;
+  }
+
+  public ApplePayService applePay() {
+    return applePay;
+  }
+
+  public InPersonLocationsService inPersonLocations() {
+    return inPersonLocations;
+  }
+
+  public InPersonTerminalsService inPersonTerminals() {
+    return inPersonTerminals;
+  }
+
+  public InPersonProductsService inPersonProducts() {
+    return inPersonProducts;
+  }
+
+  public InPersonSkusService inPersonSkus() {
+    return inPersonSkus;
+  }
+
+  public InPersonOrdersService inPersonOrders() {
+    return inPersonOrders;
   }
 }

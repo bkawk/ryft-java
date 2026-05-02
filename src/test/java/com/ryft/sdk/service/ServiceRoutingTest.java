@@ -320,4 +320,108 @@ class ServiceRoutingTest {
     assertEquals("fee_123", fee.id());
     assertEquals(50, fee.amount());
   }
+
+  @Test
+  void applePayRegisterDomainHitsExpectedEndpoint() {
+    FakeHttpClient fake = new FakeHttpClient(request -> FakeHttpClient.jsonResponse(
+        200,
+        "{\"id\":\"apd_123\",\"domainName\":\"shop.example.com\"}"
+    ));
+    ApplePayService service = new ApplePayService(new RyftHttpClient(
+        RyftConfig.builder("sk_sandbox_123").baseUrl("https://api.example.test/v1").httpClient(fake).build()
+    ));
+
+    var domain = service.registerDomain(
+        new com.ryft.sdk.request.RegisterApplePayDomainRequest("shop.example.com")
+    );
+
+    assertEquals("POST", fake.getLastRequest().method());
+    assertEquals("https://api.example.test/v1/apple-pay/web-domains", fake.getLastRequest().uri().toString());
+    assertEquals("apd_123", domain.id());
+    assertEquals("shop.example.com", domain.domainName());
+  }
+
+  @Test
+  void applePayCreateSessionHitsSessionsEndpoint() {
+    FakeHttpClient fake = new FakeHttpClient(request -> FakeHttpClient.jsonResponse(
+        200,
+        "{\"sessionObject\":\"opaque-session-blob\"}"
+    ));
+    ApplePayService service = new ApplePayService(new RyftHttpClient(
+        RyftConfig.builder("sk_sandbox_123").baseUrl("https://api.example.test/v1").httpClient(fake).build()
+    ));
+
+    var session = service.createSession(
+        new com.ryft.sdk.request.CreateApplePaySessionRequest("Example Store", "shop.example.com")
+    );
+
+    assertEquals("https://api.example.test/v1/apple-pay/sessions", fake.getLastRequest().uri().toString());
+    assertEquals("opaque-session-blob", session.sessionObject());
+  }
+
+  @Test
+  void inPersonLocationCreateReturnsTypedLocation() {
+    FakeHttpClient fake = new FakeHttpClient(request -> FakeHttpClient.jsonResponse(
+        200,
+        "{\"id\":\"loc_123\",\"name\":\"Flagship\",\"address\":{\"firstLine\":\"1 SDK Street\",\"city\":\"London\",\"postalCode\":\"SW1A1AA\",\"country\":\"GB\"}}"
+    ));
+    InPersonLocationsService service = new InPersonLocationsService(new RyftHttpClient(
+        RyftConfig.builder("sk_sandbox_123").baseUrl("https://api.example.test/v1").httpClient(fake).build()
+    ));
+
+    var location = service.create(
+        new com.ryft.sdk.request.CreateInPersonLocationRequest(
+            "Flagship",
+            new com.ryft.sdk.request.InPersonLocationAddressRequest(
+                "1 SDK Street", null, "London", null, "SW1A1AA", "GB"
+            ),
+            null,
+            null
+        )
+    );
+
+    assertEquals("https://api.example.test/v1/in-person/locations", fake.getLastRequest().uri().toString());
+    assertEquals("loc_123", location.id());
+    assertEquals("London", location.address().city());
+  }
+
+  @Test
+  void inPersonTerminalInitiatePaymentHitsPaymentEndpoint() {
+    FakeHttpClient fake = new FakeHttpClient(request -> FakeHttpClient.jsonResponse(
+        200,
+        "{\"id\":\"trm_123\",\"status\":\"PaymentInProgress\"}"
+    ));
+    InPersonTerminalsService service = new InPersonTerminalsService(new RyftHttpClient(
+        RyftConfig.builder("sk_sandbox_123").baseUrl("https://api.example.test/v1").httpClient(fake).build()
+    ));
+
+    var terminal = service.initiatePayment(
+        "trm_123",
+        new com.ryft.sdk.request.TerminalPaymentRequest(
+            new com.ryft.sdk.request.RequestedAmounts(500),
+            "GBP",
+            null,
+            null
+        )
+    );
+
+    assertEquals("POST", fake.getLastRequest().method());
+    assertEquals("https://api.example.test/v1/in-person/terminals/trm_123/payment", fake.getLastRequest().uri().toString());
+    assertEquals("trm_123", terminal.id());
+  }
+
+  @Test
+  void inPersonSkuListAppliesFilters() {
+    FakeHttpClient fake = new FakeHttpClient(request -> FakeHttpClient.jsonResponse(200, "{\"items\":[]}"));
+    InPersonSkusService service = new InPersonSkusService(new RyftHttpClient(
+        RyftConfig.builder("sk_sandbox_123").baseUrl("https://api.example.test/v1").httpClient(fake).build()
+    ));
+
+    service.listSkus(true, 25, "sku_prev", "GB", "prd_123");
+
+    assertEquals(
+        "https://api.example.test/v1/in-person/skus?ascending=true&limit=25&startsAfter=sku_prev&country=GB&productId=prd_123",
+        fake.getLastRequest().uri().toString()
+    );
+  }
 }
